@@ -7,6 +7,7 @@ parser.add_argument('-u','--username',  help='username for LDAP', required=True)
 parser.add_argument('-p','--password',  help='password for LDAP (or LM:NT hash)',required=True)
 parser.add_argument('-l','--ldapserver', help='LDAP server (or domain)', required=False)
 parser.add_argument('-d','--domain', help='Domain', required=True)
+parser.add_argument('-a','--computer', help='Computer', required=False)
 
 def base_creator(domain):
     search_base = ""
@@ -23,7 +24,7 @@ def main():
     else:
         s = Server(args.domain, get_info=ALL)
     c = Connection(s, user=args.domain + "\\" + args.username, password=args.password, authentication=NTLM, auto_bind=True)
-    c.search(search_base=base_creator(args.domain), search_filter='(&(objectCategory=computer)(ms-MCS-AdmPwd=*))',attributes=['ms-MCS-AdmPwd','SAMAccountname'])
+    c.search(search_base=base_creator(args.domain), search_filter='(&(objectCategory=computer)(SAMAccountname=args.computer)(ms-MCS-AdmPwd=*))',attributes=['ms-MCS-AdmPwd','SAMAccountname'])
     for entry in c.entries:
         print (str(entry['sAMAccountName']) +":"+ str(entry['ms-Mcs-AdmPwd']))
 
